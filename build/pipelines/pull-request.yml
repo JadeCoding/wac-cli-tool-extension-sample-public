@@ -1,0 +1,59 @@
+trigger: none
+
+jobs:
+- job: Phase_1
+  displayName: Phase 1
+  cancelTimeoutInMinutes: 1
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - checkout: self
+    clean: true
+    persistCredentials: True
+  - task: PowerShell@2
+    displayName: Install Pester 3.4.0 if not present
+    inputs:
+      targetType: inline
+      script: |
+        $path = $env:ProgramFiles + "\WindowsPowerShell\Modules\Pester"
+        $versions = get-childItem -Path $path -ErrorAction Ignore
+        $versions
+        $found = $versions | ?{ $_.Name -eq "3.4.0" }
+        if ($null -eq $found) { Install-Module -Name Pester -RequiredVersion 3.4.0 -SkipPublisherCheck -Force }
+  - task: PowerShell@2
+    displayName: Run whoami and hostname
+    inputs:
+      targetType: inline
+      script: |
+        whoami
+        hostname
+  - task: NodeTool@0
+    displayName: 'Use Node 12.18.3'
+    inputs:
+      versionSpec: 12.18.3
+  - task: Npm@1
+    displayName: 'npm install @angular/cli'
+    inputs:
+      command: custom
+      customCommand: 'install -g @angular/cli@11.2.13'
+  - task: Npm@1
+    displayName: 'npm install typescript'
+    inputs:
+      command: custom
+      customCommand: 'install -g typescript@4.1.5'
+  - task: Npm@1
+    displayName: npm ci
+    inputs:
+      command: custom
+      verbose: true
+      customCommand: ci
+  - task: gulp@0
+    displayName: 'gulp build'
+    inputs:
+      gulpFile: gulpfile.ts
+      targets: build
+      arguments: --verbose --prod --junit
+      publishJUnitResults: true
+      testResultsFiles: unittests\junitresults.xml
+      testRunTitle: WAC Build Unit Tests
+...

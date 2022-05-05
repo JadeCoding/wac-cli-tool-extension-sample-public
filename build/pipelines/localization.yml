@@ -1,0 +1,42 @@
+trigger: none
+variables:
+- name: localizationkey
+  value: '6YxhBI_Fj9w_AqUMXi9jAEGPD7d-6F.~xI'
+- name: branch
+  value: main
+  
+schedules:
+- cron: 0 6 * * *
+  displayName: Run at 11pm (6AM UTC)
+  branches:
+    include:
+    - main
+  always: true
+
+# localization still doesn't support Azure Pipelines
+jobs:
+- job: Phase_1
+  displayName: Phase 1
+  cancelTimeoutInMinutes: 1
+  pool:
+    name: Package ES Lab E
+  steps:
+  - checkout: self
+    clean: true
+    persistCredentials: True
+  - task: PkgESTouchdownLocService@10
+    displayName: PkgES Touchdown Loc Service Task
+    inputs:
+      IsCallToServiceStepSelected: true
+      IsCheckedInFileSelected: true
+      GitBranch: $(branch)
+      GitLocPath: loc/output
+      LocConfigFile: $(Build.SourcesDirectory)\loc\locConfig.xml
+      OutPath: $(Build.SourcesDirectory)\loc\output
+      LangMapFile: $(Build.SourcesDirectory)\loc\langMap.xml
+      ModuleId: ${module-id}
+      AuthenticationMode: OAuth
+      ClientApplicationID: fb9ef10e-105a-4e52-bf9c-39185e0e5764
+      ApplicationKeyID: $(localizationkey)
+      SkipVSTSDrop: true
+...

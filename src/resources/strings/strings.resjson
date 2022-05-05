@@ -1,0 +1,13 @@
+{
+    "//": "manifest section",
+    "ContosoIncManageFooWorks_Manifest_displayName": "ManageFooWorks",
+    "ContosoIncManageFooWorks_Manifest_description": "{!product-description}",
+    "ContosoIncManageFooWorks_Manifest_keywords": "ContosoInc",
+
+    "//": "ManageFooWorks",
+    "ContosoIncManageFooWorks_title": "ManageFooWorks",
+
+    "//": "about",
+    "ContosoIncManageFooWorks_about": "{!product-about}",
+    "ContosoIncManageFooWorks_aboutDescription": "{!product-about-description}"
+}
